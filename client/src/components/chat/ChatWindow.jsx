@@ -5,7 +5,15 @@ import MessageInput from "./MessageInput.jsx";
 import MessageList from "./MessageList.jsx";
 import TypingIndicator from "./TypingIndicator.jsx";
 
-export default function ChatWindow({ conversation, messages, typingUser, onSend, onTyping }) {
+export default function ChatWindow({
+  conversation,
+  messages,
+  typingUser,
+  onSend,
+  onTyping,
+  onBack,
+  onError,
+}) {
   const { user } = useAuth();
   if (!conversation) {
     return <main className="chat-main"><EmptyState title="Your conversations, together">Choose a chat or find someone new to get started.</EmptyState></main>;
@@ -15,12 +23,15 @@ export default function ChatWindow({ conversation, messages, typingUser, onSend,
   return (
     <main className="chat-main">
       <header className="chat-header">
+        <button className="chat-back-button" type="button" onClick={onBack}>
+          Back
+        </button>
         <Avatar user={other || { username: title }} />
         <div><strong>{title}</strong><span>{other?.lastSeen ? "NexTalk" : "Conversation"}</span></div>
       </header>
       <MessageList messages={messages} />
       <TypingIndicator visible={Boolean(typingUser && typingUser !== user._id)} />
-      <MessageInput onSend={onSend} onTyping={onTyping} />
+      <MessageInput onSend={onSend} onTyping={onTyping} onError={onError} />
     </main>
   );
 }

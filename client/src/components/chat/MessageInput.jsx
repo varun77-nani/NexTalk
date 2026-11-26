@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function MessageInput({ onSend, onTyping, disabled }) {
+export default function MessageInput({ onSend, onTyping, onError, disabled }) {
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
   const typingTimer = useRef(null);
@@ -18,7 +18,7 @@ export default function MessageInput({ onSend, onTyping, disabled }) {
       await onSend(text);
       setContent("");
     } catch (error) {
-      console.error("Could not send message", error);
+      onError(error.message || "Could not send message");
     } finally {
       setSending(false);
     }
