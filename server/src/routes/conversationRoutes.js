@@ -1,0 +1,11 @@
+import { Router } from "express";
+import * as conversationController from "../controllers/conversationController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import asyncHandler from "../utils/asyncHandler.js";
+
+const router = Router();
+router.use(protect);
+router.get("/", asyncHandler(conversationController.getConversations));
+router.post("/", asyncHandler(conversationController.createConversation));
+
+export default router;
