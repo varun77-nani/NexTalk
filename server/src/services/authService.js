@@ -23,7 +23,8 @@ export async function signup(details = {}) {
   ) {
     throw new ApiError(400, "Username, email, and password are required");
   }
-  if (username.trim().length < 2 || username.trim().length > 30) {
+  const normalizedUsername = username.trim();
+  if (normalizedUsername.length < 2 || normalizedUsername.length > 30) {
     throw new ApiError(400, "Username must be between 2 and 30 characters");
   }
   const normalizedEmail = email.trim().toLowerCase();
@@ -45,7 +46,7 @@ export async function signup(details = {}) {
   const passwordHash = await bcrypt.hash(password, 12);
   let user;
   try {
-    user = await User.create({ username: username.trim(), email: normalizedEmail, passwordHash });
+    user = await User.create({ username: normalizedUsername, email: normalizedEmail, passwordHash });
   } catch (error) {
     if (error.code === 11000) throw new ApiError(409, "An account with this email already exists");
     throw error;

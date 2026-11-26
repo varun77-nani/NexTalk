@@ -8,7 +8,8 @@ export function registerChatHandlers(io, socket) {
   socket.join(userRoom);
   if (!alreadyOnline) io.emit("presence:online", { userId: socket.user.id });
 
-  socket.on("conversation:join", async ({ conversationId } = {}, acknowledge = () => {}) => {
+  socket.on("conversation:join", async (payload = {}, acknowledge = () => {}) => {
+    const conversationId = payload?.conversationId;
     const reply = typeof acknowledge === "function" ? acknowledge : () => {};
     try {
       if (!mongoose.isValidObjectId(conversationId)) {
@@ -27,7 +28,8 @@ export function registerChatHandlers(io, socket) {
     }
   });
 
-  socket.on("conversation:leave", ({ conversationId } = {}) => {
+  socket.on("conversation:leave", (payload = {}) => {
+    const conversationId = payload?.conversationId;
     if (mongoose.isValidObjectId(conversationId)) {
       socket.leave(`conv:${conversationId}`);
     }
@@ -37,9 +39,9 @@ export function registerChatHandlers(io, socket) {
     const reply = typeof acknowledge === "function" ? acknowledge : () => {};
     try {
       const message = await messageService.createMessage({
-        conversationId: payload.conversationId,
+        conversationId: payload?.conversationId,
         senderId: socket.user.id,
-        content: payload.content,
+        content: payload?.content,
       });
       io.to(`conv:${payload.conversationId}`).emit("message:new", message);
       reply({ ok: true, message });
@@ -53,7 +55,8 @@ export function registerChatHandlers(io, socket) {
   });
 
   for (const event of ["typing:start", "typing:stop"]) {
-    socket.on(event, ({ conversationId } = {}) => {
+    socket.on(event, (payload = {}) => {
+      const conversationId = payload?.conversationId;
       const room = `conv:${conversationId}`;
       if (!mongoose.isValidObjectId(conversationId) || !socket.rooms.has(room)) return;
       socket.to(room).emit("typing:update", {

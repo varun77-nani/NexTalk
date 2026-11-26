@@ -8,14 +8,16 @@ export async function searchUsers(req, res) {
   }
   const search = rawSearch?.trim();
   if (!search) return res.json({ users: [] });
+  if (search.length > 100) throw new ApiError(400, "Search must not exceed 100 characters");
+  const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const users = await User.find({
     _id: { $ne: req.user.id },
     $or: [
-      { username: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" } },
-      { email: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" } },
+      { username: { $regex: escapedSearch, $options: "i" } },
+      { email: { $regex: escapedSearch, $options: "i" } },
     ],
   })
-    .select("username email avatarUrl lastSeen")
+    .select("username avatarUrl lastSeen")
     .limit(20);
   res.json({ users });
 }
