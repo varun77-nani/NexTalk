@@ -8,7 +8,7 @@ export async function getConversations(req, res) {
 export async function createConversation(req, res) {
   const conversation = await conversationService.findOrCreateConversation(
     req.user.id,
-    req.body.participantId,
+    req.body?.participantId,
   );
   res.status(200).json({ conversation });
 }

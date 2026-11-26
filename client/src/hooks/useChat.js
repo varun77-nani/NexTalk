@@ -35,12 +35,19 @@ export function useChat() {
     const conversationId = activeConversation._id;
     setMessages([]);
     conversationApi.getMessages(conversationId)
-      .then((items) => { if (active) setMessages(items); })
+      .then((items) => {
+        if (!active) return;
+        setMessages((current) => {
+          const historyIds = new Set(items.map((message) => message._id));
+          return [...items, ...current.filter((message) => !historyIds.has(message._id))];
+        });
+      })
       .catch((requestError) => {
         if (active) setError(requestError.response?.data?.message || "Could not load messages");
       });
     socket.emit("conversation:join", { conversationId }, (result) => {
-      if (result?.error) setError(result.error);
+      if (result?.error && active) setError(result.error);
+      else if (!result?.error && !active) socket.emit("conversation:leave", { conversationId });
     });
     const onMessage = (message) => {
       if (message.conversationId !== conversationId) return;
@@ -56,6 +63,7 @@ export function useChat() {
     socket.on("typing:update", onTyping);
     return () => {
       active = false;
+      socket.emit("conversation:leave", { conversationId });
       socket.off("message:new", onMessage);
       socket.off("typing:update", onTyping);
       setTypingUser(null);
@@ -66,7 +74,15 @@ export function useChat() {
     if (!activeConversation) return reject(new Error("Choose a conversation first"));
     socket.emit("message:send", { conversationId: activeConversation._id, content }, (result) => {
       if (result?.error) reject(new Error(result.error));
-      else resolve(result.message);
+      else if (!result?.message?._id) reject(new Error("Could not send message"));
+      else {
+        setMessages((current) =>
+          current.some((item) => item._id === result.message._id)
+            ? current
+            : [...current, result.message],
+        );
+        resolve(result.message);
+      }
     });
   }), [activeConversation, socket]);
 

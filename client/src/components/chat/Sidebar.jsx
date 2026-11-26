@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createConversation } from "../../api/conversationApi.js";
 import { searchUsers } from "../../api/userApi.js";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -9,14 +9,19 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
   const { user, logout } = useAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const searchRequest = useRef(0);
 
   async function handleSearch(value) {
     setQuery(value);
+    const requestId = ++searchRequest.current;
     if (!value.trim()) return setResults([]);
     try {
-      setResults(await searchUsers(value));
+      const users = await searchUsers(value);
+      if (requestId === searchRequest.current) setResults(users);
     } catch (error) {
-      onError(error.response?.data?.message || "User search failed");
+      if (requestId === searchRequest.current) {
+        onError(error.response?.data?.message || "User search failed");
+      }
     }
   }
 
@@ -25,6 +30,7 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
       const conversation = await createConversation(person._id);
       await onRefresh();
       onSelect(conversation);
+      searchRequest.current += 1;
       setQuery("");
       setResults([]);
     } catch (error) {
@@ -41,7 +47,12 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
       <div className="profile-summary"><Avatar user={user} /><span>{user.username}</span></div>
       <label className="search-label">
         <span>Find people</span>
-        <input value={query} onChange={(event) => handleSearch(event.target.value)} placeholder="Search by name or email" />
+        <input
+          value={query}
+          maxLength={100}
+          onChange={(event) => handleSearch(event.target.value)}
+          placeholder="Search by name or email"
+        />
       </label>
       {results.length > 0 && (
         <div className="search-results">
