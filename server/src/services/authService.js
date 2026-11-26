@@ -11,24 +11,58 @@ const publicUser = (user) => ({
   lastSeen: user.lastSeen,
 });
 
-export async function signup({ username, email, password }) {
-  if (!username?.trim() || !email?.trim() || !password) {
+export async function signup(details = {}) {
+  const { username, email, password } = details ?? {};
+  if (
+    typeof username !== "string" ||
+    typeof email !== "string" ||
+    typeof password !== "string" ||
+    !username.trim() ||
+    !email.trim() ||
+    !password
+  ) {
     throw new ApiError(400, "Username, email, and password are required");
   }
-  if (password.length < 8) throw new ApiError(400, "Password must be at least 8 characters");
-
+  if (username.trim().length < 2 || username.trim().length > 30) {
+    throw new ApiError(400, "Username must be between 2 and 30 characters");
+  }
   const normalizedEmail = email.trim().toLowerCase();
+  if (
+    normalizedEmail.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+  ) {
+    throw new ApiError(400, "A valid email address is required");
+  }
+  if (password.length < 8) throw new ApiError(400, "Password must be at least 8 characters");
+  if (Buffer.byteLength(password, "utf8") > 72) {
+    throw new ApiError(400, "Password must not exceed 72 bytes");
+  }
+
   if (await User.exists({ email: normalizedEmail })) {
     throw new ApiError(409, "An account with this email already exists");
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await User.create({ username: username.trim(), email: normalizedEmail, passwordHash });
+  let user;
+  try {
+    user = await User.create({ username: username.trim(), email: normalizedEmail, passwordHash });
+  } catch (error) {
+    if (error.code === 11000) throw new ApiError(409, "An account with this email already exists");
+    throw error;
+  }
   return { user: publicUser(user), token: generateToken(user._id) };
 }
 
-export async function login({ email, password }) {
-  if (!email?.trim() || !password) throw new ApiError(400, "Email and password are required");
+export async function login(credentials = {}) {
+  const { email, password } = credentials ?? {};
+  if (
+    typeof email !== "string" ||
+    typeof password !== "string" ||
+    !email.trim() ||
+    !password
+  ) {
+    throw new ApiError(400, "Email and password are required");
+  }
   const user = await User.findOne({ email: email.trim().toLowerCase() }).select("+passwordHash");
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     throw new ApiError(401, "Invalid email or password");
