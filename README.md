@@ -49,6 +49,11 @@ so they can be developed and deployed independently.
 - **Authentication:** REST and Socket.IO authenticate using the same
   HttpOnly JWT cookie. Configure matching client/server origins when deploying.
 
+## Function guide
+
+For a plain-language overview of what the main client and server functions do,
+see the [function use-case guide](docs/function-use-cases.md).
+
 ### Message delivery
 
 ```text
