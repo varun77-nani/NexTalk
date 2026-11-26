@@ -96,7 +96,6 @@ how the application behaves.
   message content, saves a message, and updates the conversation's latest
   message.
 - `getMessages` in the same file checks access and returns a page of history.
-- `markAsRead` records that a participant has read the messages.
 - `requireParticipant` is the shared access check used by those service
   functions to make sure the conversation exists and belongs to the user.
 - [`sendMessage`](../server/src/controllers/messageController.js) handles the
@@ -116,8 +115,6 @@ how the application behaves.
   during server startup.
 - [`asyncHandler`](../server/src/utils/asyncHandler.js) forwards rejected
   asynchronous route handlers to Express error handling.
-- [`requireBodyFields`](../server/src/middleware/validate.js) checks that
-  required request-body fields are present.
 - [`notFound` and `errorHandler`](../server/src/middleware/errorHandler.js)
   turn missing routes and application errors into HTTP error responses.
 - [`formatTime`](../client/src/utils/formatTime.js) converts a timestamp into

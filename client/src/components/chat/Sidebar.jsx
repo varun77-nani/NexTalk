@@ -47,7 +47,12 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
       <div className="profile-summary"><Avatar user={user} /><span>{user.username}</span></div>
       <label className="search-label">
         <span>Find people</span>
-        <input value={query} onChange={(event) => handleSearch(event.target.value)} placeholder="Search by name or email" />
+        <input
+          value={query}
+          maxLength={100}
+          onChange={(event) => handleSearch(event.target.value)}
+          placeholder="Search by name or email"
+        />
       </label>
       {results.length > 0 && (
         <div className="search-results">

@@ -11,8 +11,10 @@ async function requireParticipant(conversationId, userId) {
 }
 
 export async function createMessage({ conversationId, senderId, content }) {
-  const trimmedContent = content?.trim();
-  if (!trimmedContent) throw new ApiError(400, "Message content is required");
+  if (typeof content !== "string" || !content.trim()) {
+    throw new ApiError(400, "Message content is required");
+  }
+  const trimmedContent = content.trim();
   if (trimmedContent.length > 5000) throw new ApiError(400, "Message is too long");
   const conversation = await requireParticipant(conversationId, senderId);
   const message = await Message.create({
@@ -31,18 +33,15 @@ export async function getMessages({ conversationId, userId, limit = 50, before }
   await requireParticipant(conversationId, userId);
   const safeLimit = Math.min(Math.max(Number.parseInt(limit, 10) || 50, 1), 100);
   const filter = { conversationId };
-  if (before && !Number.isNaN(Date.parse(before))) filter.createdAt = { $lt: new Date(before) };
+  if (before) {
+    if (typeof before !== "string" || Number.isNaN(Date.parse(before))) {
+      throw new ApiError(400, "Invalid message cursor");
+    }
+    filter.createdAt = { $lt: new Date(before) };
+  }
   return Message.find(filter)
     .sort({ createdAt: -1 })
     .limit(safeLimit)
     .populate("senderId", "username avatarUrl")
     .then((messages) => messages.reverse());
-}
-
-export async function markAsRead({ conversationId, userId }) {
-  await requireParticipant(conversationId, userId);
-  await Message.updateMany(
-    { conversationId, senderId: { $ne: userId }, readBy: { $ne: userId } },
-    { $addToSet: { readBy: userId } },
-  );
 }
