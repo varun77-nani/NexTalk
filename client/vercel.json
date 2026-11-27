@@ -1,8 +1,26 @@
 {
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://nextalk-backend-xax9.onrender.com/api/:path*"
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": "https://nextalk-backend-xax9.onrender.com/socket.io/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+    },
+    {
+      "source": "/socket.io/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
     }
   ]
 }
