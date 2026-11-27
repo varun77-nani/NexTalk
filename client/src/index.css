@@ -72,6 +72,24 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .auth-foot a { color: #625bd0; font-weight: 600; text-decoration: none; }
 .form-error { margin: 0 !important; color: #c5374d !important; }
 
+.login-page { position: relative; isolation: isolate; min-height: 100vh; display: grid; place-items: center; overflow-x: hidden; padding: 24px; background: radial-gradient(ellipse at 50% 45%, #fff 0, #f8f7ff 43%, transparent 74%), linear-gradient(135deg, #f2f1ff, #f9faff); }
+.login-page::before, .login-page::after { position: absolute; z-index: -1; content: ""; pointer-events: none; border-radius: 50%; }
+.login-page::before { width: 720px; height: 720px; top: -560px; left: -440px; border: 76px solid #e2dfff70; box-shadow: 0 0 0 28px #efedff80; transform: rotate(-18deg); }
+.login-page::after { width: 940px; height: 460px; right: -290px; bottom: -330px; background: linear-gradient(165deg, transparent 22%, #dcd9ff72 36%, #e4e8ff8c 56%, transparent 76%); transform: rotate(-10deg); }
+.login-card { width: min(384px, 100%); gap: 14px; padding: 28px 32px 32px; border-color: #f0eff7; border-radius: 22px; background: #ffffffed; box-shadow: 0 22px 65px #34305d18; }
+.login-logo-lockup { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 4px; }
+.login-logo-mark { width: 52px; height: 52px; flex: 0 0 52px; }
+.login-wordmark { color: #202335; font: 800 28px/1 Manrope, sans-serif; letter-spacing: -1.2px; }
+.login-wordmark span { color: #704be1; }
+.login-card .login-heading { display: grid; gap: 7px; margin-bottom: 2px; }
+.login-card .login-heading h1 { margin: 0; color: #202335; font: 800 24px/1.2 Manrope, sans-serif; letter-spacing: -.7px; }
+.login-card .login-heading p { margin: 0; color: #7f8798; font-size: 14px; line-height: 1.45; }
+.login-card label { gap: 7px; color: #424a5b; font-size: 13px; }
+.login-card input { min-height: 39px; padding: 9px 11px; border-color: #dfe3ec; border-radius: 8px; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.login-card button { min-height: 41px; margin-top: 1px; border-radius: 9px; background: linear-gradient(105deg, #6842df, #7643df); box-shadow: 0 7px 16px #6842df26; transition: transform .2s, box-shadow .2s; }
+.login-card button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 20px #6842df40; }
+.login-card .auth-foot { margin: 1px 0 0; color: #858b99; font-size: 13px; }
+
 @media (max-width: 700px) {
   .sidebar { width: 100%; flex-basis: 100%; }
   .chat-main { display: none; }
@@ -83,4 +101,11 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   .message-form { padding: 10px 12px; }
   .message-form button { padding: 12px; }
   .auth-card { padding: 28px 23px; }
+}
+
+@media (max-width: 820px) {
+  .login-page { padding: 20px; }
+  .login-card { padding: 28px 26px 30px; }
+  .login-page::before { left: -520px; top: -590px; }
+  .login-page::after { right: -420px; bottom: -350px; }
 }
