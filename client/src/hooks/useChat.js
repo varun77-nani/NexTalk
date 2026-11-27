@@ -45,10 +45,12 @@ export function useChat() {
       .catch((requestError) => {
         if (active) setError(requestError.response?.data?.message || "Could not load messages");
       });
-    socket.emit("conversation:join", { conversationId }, (result) => {
-      if (result?.error && active) setError(result.error);
-      else if (!result?.error && !active) socket.emit("conversation:leave", { conversationId });
-    });
+    const joinConversation = () => {
+      socket.emit("conversation:join", { conversationId }, (result) => {
+        if (result?.error && active) setError(result.error);
+        else if (!result?.error && !active) socket.emit("conversation:leave", { conversationId });
+      });
+    };
     const onMessage = (message) => {
       if (message.conversationId !== conversationId) return;
       setMessages((current) =>
@@ -61,9 +63,12 @@ export function useChat() {
     };
     socket.on("message:new", onMessage);
     socket.on("typing:update", onTyping);
+    socket.on("connect", joinConversation);
+    if (socket.connected) joinConversation();
     return () => {
       active = false;
-      socket.emit("conversation:leave", { conversationId });
+      socket.off("connect", joinConversation);
+      if (socket.connected) socket.emit("conversation:leave", { conversationId });
       socket.off("message:new", onMessage);
       socket.off("typing:update", onTyping);
       setTypingUser(null);
