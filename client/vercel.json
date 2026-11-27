@@ -5,6 +5,10 @@
       "destination": "https://nextalk-backend-xax9.onrender.com/api/:path*"
     },
     {
+      "source": "/socket.io/",
+      "destination": "https://nextalk-backend-xax9.onrender.com/socket.io/"
+    },
+    {
       "source": "/socket.io/:path*",
       "destination": "https://nextalk-backend-xax9.onrender.com/socket.io/:path*"
     },
@@ -20,6 +24,10 @@
     },
     {
       "source": "/socket.io/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+    },
+    {
+      "source": "/socket.io/",
       "headers": [{ "key": "Cache-Control", "value": "no-store" }]
     }
   ]
