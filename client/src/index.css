@@ -89,6 +89,8 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .login-card button { min-height: 41px; margin-top: 1px; border-radius: 9px; background: linear-gradient(105deg, #6842df, #7643df); box-shadow: 0 7px 16px #6842df26; transition: transform .2s, box-shadow .2s; }
 .login-card button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 20px #6842df40; }
 .login-card .auth-foot { margin: 1px 0 0; color: #858b99; font-size: 13px; }
+.login-credit { position: absolute; right: 24px; bottom: 18px; color: #858b99; font-size: 12px; }
+.login-credit strong { color: #6842df; font-weight: 600; }
 
 @media (max-width: 700px) {
   .sidebar { width: 100%; flex-basis: 100%; }

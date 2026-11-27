@@ -53,6 +53,7 @@ export default function Login() {
         <button disabled={busy}>{busy ? "Signing in..." : "Sign in"}</button>
         <p className="auth-foot">New to NexTalk? <Link to="/register">Create an account</Link></p>
       </form>
+      <span className="login-credit">Developed by <strong>Varun</strong></span>
     </main>
   );
 }
