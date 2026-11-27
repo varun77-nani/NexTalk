@@ -49,6 +49,9 @@ Set `CLIENT_URL` to a comma-separated list of allowed frontend origins, such as
 in the backend hosting environment as well as in the local `.env` file.
 
 You can also create `client/.env` using the provided example file if you need to change the API or Socket.IO URLs.
+For production, set the frontend's `VITE_API_URL` to
+`https://nextalk-backend-xax9.onrender.com/api`. The production build uses this
+backend URL by default; local development continues to use the `/api` Vite proxy.
 
 **4. Start the application**
 
