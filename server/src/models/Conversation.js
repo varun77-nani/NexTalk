@@ -2,10 +2,16 @@ import mongoose from "mongoose";
 
 const conversationSchema = new mongoose.Schema(
   {
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }],
+    participants: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    ],
     isGroup: { type: Boolean, default: false },
     groupName: { type: String, trim: true, default: null },
-    lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: "Message", default: null },
+    lastMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
+    },
   },
   { timestamps: true },
 );

@@ -6,7 +6,10 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 const router = Router();
 router.use(protect);
-router.get("/:conversationId", asyncHandler(conversationController.getMessages));
+router.get(
+  "/:conversationId",
+  asyncHandler(conversationController.getMessages),
+);
 router.post("/:conversationId", asyncHandler(messageController.sendMessage));
 
 export default router;

@@ -4,8 +4,12 @@ import Message from "../models/Message.js";
 import ApiError from "../utils/ApiError.js";
 
 async function requireParticipant(conversationId, userId) {
-  if (!mongoose.isValidObjectId(conversationId)) throw new ApiError(400, "Invalid conversation ID");
-  const conversation = await Conversation.findOne({ _id: conversationId, participants: userId });
+  if (!mongoose.isValidObjectId(conversationId))
+    throw new ApiError(400, "Invalid conversation ID");
+  const conversation = await Conversation.findOne({
+    _id: conversationId,
+    participants: userId,
+  });
   if (!conversation) throw new ApiError(404, "Conversation not found");
   return conversation;
 }
@@ -15,7 +19,8 @@ export async function createMessage({ conversationId, senderId, content }) {
     throw new ApiError(400, "Message content is required");
   }
   const trimmedContent = content.trim();
-  if (trimmedContent.length > 5000) throw new ApiError(400, "Message is too long");
+  if (trimmedContent.length > 5000)
+    throw new ApiError(400, "Message is too long");
   const conversation = await requireParticipant(conversationId, senderId);
   const message = await Message.create({
     conversationId,
@@ -29,9 +34,17 @@ export async function createMessage({ conversationId, senderId, content }) {
   return message.populate("senderId", "username avatarUrl");
 }
 
-export async function getMessages({ conversationId, userId, limit = 50, before }) {
+export async function getMessages({
+  conversationId,
+  userId,
+  limit = 50,
+  before,
+}) {
   await requireParticipant(conversationId, userId);
-  const safeLimit = Math.min(Math.max(Number.parseInt(limit, 10) || 50, 1), 100);
+  const safeLimit = Math.min(
+    Math.max(Number.parseInt(limit, 10) || 50, 1),
+    100,
+  );
   const filter = { conversationId };
   if (before) {
     if (typeof before !== "string" || Number.isNaN(Date.parse(before))) {

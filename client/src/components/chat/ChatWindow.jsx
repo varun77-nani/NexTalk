@@ -16,11 +16,23 @@ export default function ChatWindow({
 }) {
   const { user } = useAuth();
   if (!conversation) {
-    return <main className="chat-main"><EmptyState title="Your conversations, together">Choose a chat or find someone new to get started.</EmptyState></main>;
+    return (
+      <main className="chat-main">
+        <EmptyState title="Your conversations, together">
+          Choose a chat or find someone new to get started.
+        </EmptyState>
+      </main>
+    );
   }
-  const other = conversation.participants.find((person) => person._id !== user._id);
-  const typingPerson = conversation.participants.find((person) => person._id === typingUser);
-  const title = conversation.isGroup ? conversation.groupName : other?.username || "Conversation";
+  const other = conversation.participants.find(
+    (person) => person._id !== user._id,
+  );
+  const typingPerson = conversation.participants.find(
+    (person) => person._id === typingUser,
+  );
+  const title = conversation.isGroup
+    ? conversation.groupName
+    : other?.username || "Conversation";
   return (
     <main className="chat-main">
       <header className="chat-header">
@@ -28,7 +40,10 @@ export default function ChatWindow({
           Back
         </button>
         <Avatar user={other || { username: title }} />
-        <div><strong>{title}</strong><span>{other?.lastSeen ? "NexTalk" : "Conversation"}</span></div>
+        <div>
+          <strong>{title}</strong>
+          <span>{other?.lastSeen ? "NexTalk" : "Conversation"}</span>
+        </div>
       </header>
       <MessageList messages={messages} />
       <TypingIndicator

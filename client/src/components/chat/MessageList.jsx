@@ -11,7 +11,11 @@ export default function MessageList({ messages }) {
   return (
     <div className="message-list">
       {messages.map((message) => (
-        <MessageBubble key={message._id} message={message} own={message.senderId._id === user._id} />
+        <MessageBubble
+          key={message._id}
+          message={message}
+          own={message.senderId._id === user._id}
+        />
       ))}
       <div ref={bottomRef} />
     </div>

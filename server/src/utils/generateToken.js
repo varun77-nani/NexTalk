@@ -8,7 +8,9 @@ export const authCookieOptions = {
 };
 
 export function generateToken(userId) {
-  return jwt.sign({ userId: userId.toString() }, env.jwtSecret, { expiresIn: "7d" });
+  return jwt.sign({ userId: userId.toString() }, env.jwtSecret, {
+    expiresIn: "7d",
+  });
 }
 
 export function setAuthCookie(res, token) {

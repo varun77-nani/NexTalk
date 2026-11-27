@@ -11,9 +11,12 @@ export function errorHandler(error, _req, res, _next) {
       : error.code === 11000
         ? 409
         : 500;
-  const requestedStatusCode = error.statusCode || error.status || defaultStatusCode;
+  const requestedStatusCode =
+    error.statusCode || error.status || defaultStatusCode;
   const statusCode =
-    Number.isInteger(requestedStatusCode) && requestedStatusCode >= 400 && requestedStatusCode < 600
+    Number.isInteger(requestedStatusCode) &&
+    requestedStatusCode >= 400 &&
+    requestedStatusCode < 600
       ? requestedStatusCode
       : 500;
   if (statusCode >= 500) console.error(error);

@@ -49,7 +49,9 @@ export default function MessageInput({ onSend, onTyping, onError, disabled }) {
         maxLength="5000"
         disabled={disabled}
       />
-      <button type="submit" disabled={disabled || sending || !content.trim()}>Send</button>
+      <button type="submit" disabled={disabled || sending || !content.trim()}>
+        Send
+      </button>
     </form>
   );
 }

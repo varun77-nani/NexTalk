@@ -8,25 +8,28 @@ export function registerChatHandlers(io, socket) {
   socket.join(userRoom);
   if (!alreadyOnline) io.emit("presence:online", { userId: socket.user.id });
 
-  socket.on("conversation:join", async (payload = {}, acknowledge = () => {}) => {
-    const conversationId = payload?.conversationId;
-    const reply = typeof acknowledge === "function" ? acknowledge : () => {};
-    try {
-      if (!mongoose.isValidObjectId(conversationId)) {
-        return reply({ error: "Conversation not found" });
+  socket.on(
+    "conversation:join",
+    async (payload = {}, acknowledge = () => {}) => {
+      const conversationId = payload?.conversationId;
+      const reply = typeof acknowledge === "function" ? acknowledge : () => {};
+      try {
+        if (!mongoose.isValidObjectId(conversationId)) {
+          return reply({ error: "Conversation not found" });
+        }
+        const conversation = await Conversation.exists({
+          _id: conversationId,
+          participants: socket.user.id,
+        });
+        if (!conversation) return reply({ error: "Conversation not found" });
+        await socket.join(`conv:${conversationId}`);
+        reply({ ok: true });
+      } catch (error) {
+        console.error("Could not join conversation", error);
+        reply({ error: "Could not join conversation" });
       }
-      const conversation = await Conversation.exists({
-        _id: conversationId,
-        participants: socket.user.id,
-      });
-      if (!conversation) return reply({ error: "Conversation not found" });
-      await socket.join(`conv:${conversationId}`);
-      reply({ ok: true });
-    } catch (error) {
-      console.error("Could not join conversation", error);
-      reply({ error: "Could not join conversation" });
-    }
-  });
+    },
+  );
 
   socket.on("conversation:leave", (payload = {}) => {
     const conversationId = payload?.conversationId;
@@ -58,7 +61,8 @@ export function registerChatHandlers(io, socket) {
     socket.on(event, (payload = {}) => {
       const conversationId = payload?.conversationId;
       const room = `conv:${conversationId}`;
-      if (!mongoose.isValidObjectId(conversationId) || !socket.rooms.has(room)) return;
+      if (!mongoose.isValidObjectId(conversationId) || !socket.rooms.has(room))
+        return;
       socket.to(room).emit("typing:update", {
         conversationId,
         userId: socket.user.id,

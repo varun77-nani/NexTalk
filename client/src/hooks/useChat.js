@@ -16,7 +16,9 @@ export function useChat() {
       setConversations(await conversationApi.getConversations());
       setError("");
     } catch (requestError) {
-      setError(requestError.response?.data?.message || "Could not load conversations");
+      setError(
+        requestError.response?.data?.message || "Could not load conversations",
+      );
     } finally {
       setLoading(false);
     }
@@ -34,32 +36,43 @@ export function useChat() {
     let active = true;
     const conversationId = activeConversation._id;
     setMessages([]);
-    conversationApi.getMessages(conversationId)
+    conversationApi
+      .getMessages(conversationId)
       .then((items) => {
         if (!active) return;
         setMessages((current) => {
           const historyIds = new Set(items.map((message) => message._id));
-          return [...items, ...current.filter((message) => !historyIds.has(message._id))];
+          return [
+            ...items,
+            ...current.filter((message) => !historyIds.has(message._id)),
+          ];
         });
       })
       .catch((requestError) => {
-        if (active) setError(requestError.response?.data?.message || "Could not load messages");
+        if (active)
+          setError(
+            requestError.response?.data?.message || "Could not load messages",
+          );
       });
     const joinConversation = () => {
       socket.emit("conversation:join", { conversationId }, (result) => {
         if (result?.error && active) setError(result.error);
-        else if (!result?.error && !active) socket.emit("conversation:leave", { conversationId });
+        else if (!result?.error && !active)
+          socket.emit("conversation:leave", { conversationId });
       });
     };
     const onMessage = (message) => {
       if (message.conversationId !== conversationId) return;
       setMessages((current) =>
-        current.some((item) => item._id === message._id) ? current : [...current, message],
+        current.some((item) => item._id === message._id)
+          ? current
+          : [...current, message],
       );
       loadConversations();
     };
     const onTyping = (event) => {
-      if (event.conversationId === conversationId) setTypingUser(event.isTyping ? event.userId : null);
+      if (event.conversationId === conversationId)
+        setTypingUser(event.isTyping ? event.userId : null);
     };
     socket.on("message:new", onMessage);
     socket.on("typing:update", onTyping);
@@ -68,35 +81,49 @@ export function useChat() {
     return () => {
       active = false;
       socket.off("connect", joinConversation);
-      if (socket.connected) socket.emit("conversation:leave", { conversationId });
+      if (socket.connected)
+        socket.emit("conversation:leave", { conversationId });
       socket.off("message:new", onMessage);
       socket.off("typing:update", onTyping);
       setTypingUser(null);
     };
   }, [activeConversation, socket, loadConversations]);
 
-  const sendMessage = useCallback((content) => new Promise((resolve, reject) => {
-    if (!activeConversation) return reject(new Error("Choose a conversation first"));
-    socket.emit("message:send", { conversationId: activeConversation._id, content }, (result) => {
-      if (result?.error) reject(new Error(result.error));
-      else if (!result?.message?._id) reject(new Error("Could not send message"));
-      else {
-        setMessages((current) =>
-          current.some((item) => item._id === result.message._id)
-            ? current
-            : [...current, result.message],
+  const sendMessage = useCallback(
+    (content) =>
+      new Promise((resolve, reject) => {
+        if (!activeConversation)
+          return reject(new Error("Choose a conversation first"));
+        socket.emit(
+          "message:send",
+          { conversationId: activeConversation._id, content },
+          (result) => {
+            if (result?.error) reject(new Error(result.error));
+            else if (!result?.message?._id)
+              reject(new Error("Could not send message"));
+            else {
+              setMessages((current) =>
+                current.some((item) => item._id === result.message._id)
+                  ? current
+                  : [...current, result.message],
+              );
+              resolve(result.message);
+            }
+          },
         );
-        resolve(result.message);
-      }
-    });
-  }), [activeConversation, socket]);
+      }),
+    [activeConversation, socket],
+  );
 
-  const updateTyping = useCallback((isTyping) => {
-    if (!activeConversation) return;
-    socket.emit(isTyping ? "typing:start" : "typing:stop", {
-      conversationId: activeConversation._id,
-    });
-  }, [activeConversation, socket]);
+  const updateTyping = useCallback(
+    (isTyping) => {
+      if (!activeConversation) return;
+      socket.emit(isTyping ? "typing:start" : "typing:stop", {
+        conversationId: activeConversation._id,
+      });
+    },
+    [activeConversation, socket],
+  );
 
   const openConversation = useCallback(async (conversation) => {
     setActiveConversation(conversation);

@@ -15,8 +15,10 @@ export function SocketProvider({ children }) {
       setOnlineUsers([]);
       return undefined;
     }
-    const online = ({ userId }) => setOnlineUsers((current) => [...new Set([...current, userId])]);
-    const offline = ({ userId }) => setOnlineUsers((current) => current.filter((id) => id !== userId));
+    const online = ({ userId }) =>
+      setOnlineUsers((current) => [...new Set([...current, userId])]);
+    const offline = ({ userId }) =>
+      setOnlineUsers((current) => current.filter((id) => id !== userId));
     socket.on("presence:online", online);
     socket.on("presence:offline", offline);
     socket.connect();
@@ -28,5 +30,7 @@ export function SocketProvider({ children }) {
   }, [socket, user]);
 
   const value = useMemo(() => ({ socket, onlineUsers }), [socket, onlineUsers]);
-  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
+  return (
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
+  );
 }

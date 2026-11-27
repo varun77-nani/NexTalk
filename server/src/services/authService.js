@@ -34,7 +34,8 @@ export async function signup(details = {}) {
   ) {
     throw new ApiError(400, "A valid email address is required");
   }
-  if (password.length < 8) throw new ApiError(400, "Password must be at least 8 characters");
+  if (password.length < 8)
+    throw new ApiError(400, "Password must be at least 8 characters");
   if (Buffer.byteLength(password, "utf8") > 72) {
     throw new ApiError(400, "Password must not exceed 72 bytes");
   }
@@ -46,9 +47,14 @@ export async function signup(details = {}) {
   const passwordHash = await bcrypt.hash(password, 12);
   let user;
   try {
-    user = await User.create({ username: normalizedUsername, email: normalizedEmail, passwordHash });
+    user = await User.create({
+      username: normalizedUsername,
+      email: normalizedEmail,
+      passwordHash,
+    });
   } catch (error) {
-    if (error.code === 11000) throw new ApiError(409, "An account with this email already exists");
+    if (error.code === 11000)
+      throw new ApiError(409, "An account with this email already exists");
     throw error;
   }
   return { user: publicUser(user), token: generateToken(user._id) };
@@ -64,7 +70,9 @@ export async function login(credentials = {}) {
   ) {
     throw new ApiError(400, "Email and password are required");
   }
-  const user = await User.findOne({ email: email.trim().toLowerCase() }).select("+passwordHash");
+  const user = await User.findOne({ email: email.trim().toLowerCase() }).select(
+    "+passwordHash",
+  );
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     throw new ApiError(401, "Invalid email or password");
   }

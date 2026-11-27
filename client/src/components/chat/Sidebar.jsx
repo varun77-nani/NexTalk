@@ -5,7 +5,13 @@ import { useAuth } from "../../hooks/useAuth.js";
 import Avatar from "../common/Avatar.jsx";
 import ConversationItem from "./ConversationItem.jsx";
 
-export default function Sidebar({ conversations, activeConversation, onSelect, onRefresh, onError }) {
+export default function Sidebar({
+  conversations,
+  activeConversation,
+  onSelect,
+  onRefresh,
+  onError,
+}) {
   const { user, logout } = useAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -41,10 +47,18 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
   return (
     <aside className="sidebar">
       <header className="sidebar-header">
-        <div className="brand"><span className="brand-mark">N</span><strong>NexTalk</strong></div>
-        <button className="text-button" onClick={logout}>Sign out</button>
+        <div className="brand">
+          <span className="brand-mark">N</span>
+          <strong>NexTalk</strong>
+        </div>
+        <button className="text-button" onClick={logout}>
+          Sign out
+        </button>
       </header>
-      <div className="profile-summary"><Avatar user={user} /><span>{user.username}</span></div>
+      <div className="profile-summary">
+        <Avatar user={user} />
+        <span>{user.username}</span>
+      </div>
       <label className="search-label">
         <span>Find people</span>
         <input
@@ -58,7 +72,8 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
         <div className="search-results">
           {results.map((person) => (
             <button key={person._id} onClick={() => startConversation(person)}>
-              <Avatar user={person} size="small" /><span>{person.username}</span>
+              <Avatar user={person} size="small" />
+              <span>{person.username}</span>
             </button>
           ))}
         </div>
@@ -74,7 +89,9 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
             onClick={() => onSelect(conversation)}
           />
         ))}
-        {!conversations.length && <p className="sidebar-hint">Search for someone to start chatting.</p>}
+        {!conversations.length && (
+          <p className="sidebar-hint">Search for someone to start chatting.</p>
+        )}
       </div>
     </aside>
   );

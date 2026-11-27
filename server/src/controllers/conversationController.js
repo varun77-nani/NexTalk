@@ -2,7 +2,9 @@ import * as conversationService from "../services/conversationService.js";
 import * as messageService from "../services/messageService.js";
 
 export async function getConversations(req, res) {
-  res.json({ conversations: await conversationService.listConversations(req.user.id) });
+  res.json({
+    conversations: await conversationService.listConversations(req.user.id),
+  });
 }
 
 export async function createConversation(req, res) {

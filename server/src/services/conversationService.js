@@ -13,12 +13,18 @@ function findDirectConversation(userId, participantId) {
 export async function listConversations(userId) {
   return Conversation.find({ participants: userId })
     .populate("participants", "username avatarUrl lastSeen")
-    .populate({ path: "lastMessage", populate: { path: "senderId", select: "username" } })
+    .populate({
+      path: "lastMessage",
+      populate: { path: "senderId", select: "username" },
+    })
     .sort({ updatedAt: -1 });
 }
 
 export async function findOrCreateConversation(userId, participantId) {
-  if (!mongoose.isValidObjectId(participantId) || userId.toString() === participantId.toString()) {
+  if (
+    !mongoose.isValidObjectId(participantId) ||
+    userId.toString() === participantId.toString()
+  ) {
     throw new ApiError(400, "A valid, different participant is required");
   }
   const participant = await User.exists({ _id: participantId });
@@ -27,7 +33,9 @@ export async function findOrCreateConversation(userId, participantId) {
   let conversation = await findDirectConversation(userId, participantId);
   if (!conversation) {
     try {
-      conversation = await Conversation.create({ participants: [userId, participantId] });
+      conversation = await Conversation.create({
+        participants: [userId, participantId],
+      });
     } catch (error) {
       if (error.code !== 11000) throw error;
       conversation = await findDirectConversation(userId, participantId);

@@ -1,4 +1,10 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import * as authApi from "../api/authApi.js";
 
 export const AuthContext = createContext(null);
@@ -11,7 +17,8 @@ export function AuthProvider({ children }) {
     try {
       setUser(await authApi.getMe());
     } catch (error) {
-      if (error.response?.status !== 401) console.error("Could not load current user", error);
+      if (error.response?.status !== 401)
+        console.error("Could not load current user", error);
       setUser(null);
     } finally {
       setLoading(false);

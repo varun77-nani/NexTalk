@@ -9,7 +9,9 @@ export default function Chat() {
   const [pageError, setPageError] = useState("");
   if (chat.loading) return <Loader label="Loading your chats..." />;
   return (
-    <main className={`chat-layout ${chat.activeConversation ? "has-active-conversation" : ""}`}>
+    <main
+      className={`chat-layout ${chat.activeConversation ? "has-active-conversation" : ""}`}
+    >
       <Sidebar
         conversations={chat.conversations}
         activeConversation={chat.activeConversation}
@@ -27,7 +29,9 @@ export default function Chat() {
         onError={setPageError}
       />
       {(pageError || chat.error) && (
-        <div className="toast" role="alert">{pageError || chat.error}</div>
+        <div className="toast" role="alert">
+          {pageError || chat.error}
+        </div>
       )}
     </main>
   );
