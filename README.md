@@ -182,6 +182,7 @@ Both REST and Socket.IO message sending use the same `messageService.createMessa
 ## Authentication and Security
 
 The application uses JWT authentication with HttpOnly cookies. The same authentication mechanism is used for REST API requests and Socket.IO connections.
+For the cross-origin Vercel and Render deployment, set `NODE_ENV=production` on the backend so auth cookies use `SameSite=None; Secure`. After deploying cookie-setting changes, sign out and sign in again to receive a fresh cookie.
 
 Before deploying the application, configure the allowed origins, environment variables, database credentials, and security settings properly.
 

@@ -1,5 +1,5 @@
 import * as authService from "../services/authService.js";
-import { setAuthCookie } from "../utils/generateToken.js";
+import { authCookieOptions, setAuthCookie } from "../utils/generateToken.js";
 
 export async function signup(req, res) {
   const result = await authService.signup(req.body);
@@ -14,7 +14,7 @@ export async function login(req, res) {
 }
 
 export function logout(_req, res) {
-  res.clearCookie("token", { httpOnly: true, sameSite: "lax" });
+  res.clearCookie("token", authCookieOptions);
   res.json({ message: "Logged out" });
 }
 
