@@ -4,12 +4,12 @@ import { authenticateSocket } from "./authSocket.js";
 import { registerChatHandlers } from "./chatHandler.js";
 
 export function initSocket(httpServer) {
-  const allowedOrigin = new URL(env.clientUrl).origin;
+  const allowedOrigins = new Set(env.clientUrls);
   const io = new Server(httpServer, {
-    cors: { origin: env.clientUrl, credentials: true },
+    cors: { origin: env.clientUrls, credentials: true },
     allowRequest: (request, callback) => {
       const origin = request.headers.origin;
-      callback(null, !origin || origin === allowedOrigin);
+      callback(null, !origin || allowedOrigins.has(origin));
     },
   });
   io.use(authenticateSocket);

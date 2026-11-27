@@ -44,6 +44,9 @@ npm --prefix server install
 Create a `.env` file inside the `server` directory using `.env.example` as a reference.
 
 Add your MongoDB connection string and a secure JWT secret of at least 32 characters.
+Set `CLIENT_URL` to a comma-separated list of allowed frontend origins, such as
+`http://localhost:5173,https://nex-talk-theta.vercel.app`. Configure this variable
+in the backend hosting environment as well as in the local `.env` file.
 
 You can also create `client/.env` using the provided example file if you need to change the API or Socket.IO URLs.
 
