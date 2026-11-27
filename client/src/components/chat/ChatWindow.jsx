@@ -19,6 +19,7 @@ export default function ChatWindow({
     return <main className="chat-main"><EmptyState title="Your conversations, together">Choose a chat or find someone new to get started.</EmptyState></main>;
   }
   const other = conversation.participants.find((person) => person._id !== user._id);
+  const typingPerson = conversation.participants.find((person) => person._id === typingUser);
   const title = conversation.isGroup ? conversation.groupName : other?.username || "Conversation";
   return (
     <main className="chat-main">
@@ -30,7 +31,10 @@ export default function ChatWindow({
         <div><strong>{title}</strong><span>{other?.lastSeen ? "NexTalk" : "Conversation"}</span></div>
       </header>
       <MessageList messages={messages} />
-      <TypingIndicator visible={Boolean(typingUser && typingUser !== user._id)} />
+      <TypingIndicator
+        visible={Boolean(typingUser && typingUser !== user._id)}
+        username={typingPerson?.username}
+      />
       <MessageInput onSend={onSend} onTyping={onTyping} onError={onError} />
     </main>
   );
